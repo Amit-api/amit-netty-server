@@ -19,7 +19,11 @@ public class UrlMapHttpRequestHandler implements HttpRequestHandler {
 	public CompletableFuture<FullHttpResponse> process(FullHttpRequest request) {
 		HttpRequestHandler result = handlerMap.get(request.uri().toLowerCase());
 		if (result != null) {
-			return result.process(request);
+			CompletableFuture<FullHttpResponse> future = result
+					.process(request);
+			if (future != null) {
+				return future;
+			}
 		}
 		return defaultHandler.process(request);
 	}
