@@ -24,7 +24,7 @@ public class ErrorHttpRequestHandler implements HttpRequestHandler {
 	@Override
 	public CompletableFuture<FullHttpResponse> process(FullHttpRequest request) {
 		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
-				status, content.copy());
+				status, content.asReadOnly());
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE,
 				"text/plain; charset=UTF-8");
 		return CompletableFuture.completedFuture(response);

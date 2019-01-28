@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Document publish http request 
+ */
 public class DocHttpRequestHandler implements HttpRequestHandler {
 	private final Class<?> location;
 	private final String filename;
@@ -44,10 +47,11 @@ public class DocHttpRequestHandler implements HttpRequestHandler {
 			status = HttpResponseStatus.OK;
 			contentType = "text/html;";
 		} catch (IOException e) {
+			NettyHttpServer.logger.error("unable to get content", e);
 		}
 
 		FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
-				status, content.copy());
+				status, content.asReadOnly());
 		response.headers().set(HttpHeaderNames.CONTENT_TYPE, contentType);
 		return CompletableFuture.completedFuture(response);
 
@@ -61,7 +65,7 @@ public class DocHttpRequestHandler implements HttpRequestHandler {
 		try (InputStream in = location.getClassLoader().getResourceAsStream(
 				"doc/" + filename)) {
 			if (in == null) {
-				throw new IOException("not found");
+				throw new IOException(String.format("file doc/%s not found", filename));
 			}
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
